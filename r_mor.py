@@ -1,42 +1,45 @@
 #################################################################
-# R2 Morphological operators
+# Rn morphological operators
+#
+#  This is basically just a wrapper for various ndimage
+#
 #################################################################
 
-#Miscellaneous functions for managing discrete R2 morphology
-import scipy as sp;
-import scipy.signal as signal;
+#Miscellaneous functions for managing discrete Rn morphology
+import scipy 		 as sp;
+import scipy.ndimage as ndi;
+
 from indicator import *;
 
-#Loads an image from file, converts it to an indicator function
-def load_img(path):
-	return to_ind(sp.misc.impread(path, True));
+#Computes the support of f
+def supp(f):
+	return vol(f);
 
-#Pads an indicator function to size nd, keeping it centered
-def pad(f, nd):
-	assert(nd[0] > f.shape[0]);
-	assert(nd[1] > f.shape[1]);
-	res = sp.zeros(nd);
-	c = ((nd[0] - f.shape[0]) / 2, (nd[1] - f.shape[1]) / 2);
-	res[c[0]:(c[0]+img.shape[0]),c[1]:(c[1]+img.shape[1])] = img;
-	return res;
-
-#Computes the inverse of an indicator function
+#Computes the inverse of f
 def invert(f):
-	return scipy.misc.imrotate(f, 180.);
+	rs = [];
+	for d in range(len(f.shape)):
+		rs.append(slice(f.shape[d]-1, 0, -1));
+	return f[tuple(rs)];
 	
 #Shifts the function f by the element v in R2
 def shift(v, f):
-	assert(False);
+	return ndi.shift(f, v);
 	
-#Convolution over R2
+#Convolution over Rn
 def conv(f, g):
-	return signal.convolve2d(pad_ind(f, s2), pad_ind(g, s2));
+	ub = tuple(array(f.shape) + array(g.shape) - 1);
+	return ndi.filters.convolve(pad(f,ub), pad(g,ub), mode='wrap');
+	
+#Correlation/conjugate convolution over Rn
+def hg_conv(f, g):
+	return conv(f, invert(g));
 
-#Minkowski sum over R2
+#Minkowski sum over Rn
 def mink_add(f,g):
 	return to_ind(r2_conv(f,g));
 	
-#Minkowski difference over R2
+#Minkowski difference over Rn
 def mink_sub(f,g):
-	return to_ind(r2_conv(f,g), vol_ind(g) - 0.001);
+	return to_ind(r2_conv(f,g), supp(g) - 0.001);
 
