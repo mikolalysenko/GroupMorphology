@@ -1,5 +1,5 @@
 import indicator 	as ind;
-from scipy.misc import imshow;
+from scipy.misc	    import imshow;
 
 A = ind.load_img("shape1.png");
 imshow(A);
