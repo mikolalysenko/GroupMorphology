@@ -39,6 +39,7 @@ def intersect(f,g):
 def complement(f):
 	return to_ind(1. - f);
 	
+#Set difference
 def subtract(f, g):
 	return intersect(f, complement(g));
 
