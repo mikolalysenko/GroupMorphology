@@ -52,8 +52,7 @@ class LieGroup:
 	def aunit():
 		assert(False)
 		
-	def convolve(a, b, nconv, act):
-		assert(False)
+	def fft(
 
 def Morphology:
 
